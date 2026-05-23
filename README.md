@@ -1,8 +1,24 @@
-# Práctica 05 — Producto Punto de Vectores en Ensamblador x86
-
-## Descripción
+# 🔢 Práctica 05 — Producto Punto de Vectores en Ensamblador x86
 
 Programa mixto **ensamblador x86 + C++** que calcula el **producto punto** (producto escalar) de dos vectores de números reales de dimensión arbitraria N. La función ensamblador recorre ambos vectores simultáneamente usando registros puntero, acumula los productos elemento a elemento en la pila de la FPU, y devuelve el resultado escalar en `ST(0)`.
+
+---
+
+## 📑 Índice
+
+- [🎯 ¿Qué hace el programa?](#-qué-hace-el-programa)
+- [🧠 Idea central del algoritmo](#-idea-central-del-algoritmo)
+- [📂 Estructura del repositorio](#-estructura-del-repositorio)
+- [🚀 Cómo empezar](#-cómo-empezar)
+- [🔍 Trazado del ejemplo `u=(2,3,4)` y `v=(1,5,2)`](#-trazado-del-ejemplo-u234-y-v152)
+- [📘 Instrucciones x86 utilizadas](#-instrucciones-x86-utilizadas)
+- [📄 Documentación adicional](#-documentación-adicional)
+
+---
+
+## 🎯 ¿Qué hace el programa?
+
+El programa toma dos vectores de **N elementos reales** ingresados por el usuario y calcula su **producto punto** mediante un algoritmo en ensamblador x86 que usa la FPU (Floating Point Unit) del procesador.
 
 La operación implementada es:
 
@@ -10,49 +26,17 @@ La operación implementada es:
 u · v = u[0]*v[0] + u[1]*v[1] + ... + u[N-1]*v[N-1]
 ```
 
----
+Por ejemplo, para los vectores `u=(2, 3, 4)` y `v=(1, 5, 2)`:
+- Entrada: 2 vectores con N=3
+- Salida: `u · v = 2*1 + 3*5 + 4*2 = 25`
 
-## Estructura del Proyecto
-
-```
-Practica05_ProductoPunto/
-├── productoPunto.asm   # Función en ensamblador x86: recorre los vectores y acumula el producto
-└── main.cpp            # Programa principal en C++: solicita datos y muestra el resultado
-```
+La función ensamblador es invocada desde C++ usando la convención **cdecl** (convención C plana), preservando los registros `ESI` y `EDI` según las normas de llamada.
 
 ---
 
-## Interfaz y Convención de Llamada
-
-La función ensamblador es invocada desde C++ usando la convención **cdecl** (convención C plana):
-
-| Elemento               | Descripción                                                                 |
-|------------------------|-----------------------------------------------------------------------------|
-| `.model flat, c`       | Modelo de memoria plana con compatibilidad de nombres C                     |
-| `extern "C"` en C++    | Desactiva el *name mangling* para que el enlazador ubique el símbolo `productoPunto` |
-| `[EBP+8]`              | Puntero a `vec1` (`double*`, 4 bytes en x86)                               |
-| `[EBP+12]`             | Puntero a `vec2` (`double*`, 4 bytes en x86)                               |
-| `[EBP+16]`             | Dimensión `N` (`int`, 4 bytes)                                             |
-| `ST(0)` al hacer `RET` | Registro donde se deposita el resultado `double` para el llamador           |
-| `ESI`, `EDI`           | Preservados con `PUSH`/`POP` según exige la convención *cdecl*              |
-
-Cada elemento `double` del vector ocupa **8 bytes**; por eso los punteros avanzan con `ADD ESI, 8` y `ADD EDI, 8` en cada iteración.
-
----
-
-## Funcionamiento del Algoritmo
+## 🧠 Idea central del algoritmo
 
 La función implementa un **bucle de acumulación** sobre la pila de la FPU. Antes de entrar al bucle, verifica que `N > 0`; si no, retorna `0.0` inmediatamente.
-
-### Registros utilizados
-
-| Registro | Rol                                                              |
-|----------|------------------------------------------------------------------|
-| `ESI`    | Puntero al elemento actual de `vec1`; avanza 8 bytes por iteración |
-| `EDI`    | Puntero al elemento actual de `vec2`; avanza 8 bytes por iteración |
-| `ECX`    | Contador decreciente: inicia en `N` y llega a 0 al terminar      |
-| `ST(0)`  | Producto parcial `vec1[i] * vec2[i]` durante la iteración; acumulador entre iteraciones |
-| `ST(1)`  | Acumulador desplazado temporalmente mientras `ST(0)` contiene el producto |
 
 ### Flujo de ejecución
 
@@ -75,6 +59,63 @@ fin:
  └─ RET → ST(0) = resultado final
 ```
 
+### Registros utilizados
+
+| Registro | Rol                                                              |
+|----------|------------------------------------------------------------------|
+| `ESI`    | Puntero al elemento actual de `vec1`; avanza 8 bytes por iteración |
+| `EDI`    | Puntero al elemento actual de `vec2`; avanza 8 bytes por iteración |
+| `ECX`    | Contador decreciente: inicia en `N` y llega a 0 al terminar      |
+| `ST(0)`  | Producto parcial / Acumulador entre iteraciones                  |
+| `ST(1)`  | Acumulador desplazado temporalmente mientras `ST(0)` contiene el producto |
+
+Cada elemento `double` del vector ocupa **8 bytes**; por eso los punteros avanzan con `ADD ESI, 8` y `ADD EDI, 8` en cada iteración.
+
+---
+
+## 📂 Estructura del repositorio
+
+```
+Practica05_ProductoPunto/
+├── documentacion/
+│   ├── README_compilacion_latex.md         # Cómo compilar el .tex a PDF
+│   ├── reporte.pdf                         # Reporte técnico compilado
+│   ├── reporte.tex                         # Reporte técnico en LaTeX
+│   └── imagenes/
+│
+├── proyecto/
+│   ├── README_instalacion.md               # Guía de instalación y puesta en marcha
+│   ├── Practica05_ProductoPunto.slnx       # Solución de Visual Studio
+│   ├── Practica05_ProductoPunto.vcxproj    # Proyecto MSBuild + MASM
+│   └── src/
+│       ├── productoPunto.asm               # Función en ensamblador x86 (FPU)
+│       └── main.cpp                        # Interfaz C++ (entrada/salida)
+│
+├── .gitattributes                          # Normalización de finales de línea
+├── .gitignore                              # Archivos ignorados por Git
+└── README.md                               # Este archivo
+```
+
+---
+
+## 🚀 Cómo empezar
+
+La guía detallada con todos los pasos (instalar Git, Visual Studio, habilitar MASM, compilar y ejecutar) está en un documento aparte:
+
+➡️ **[Guía de instalación y puesta en marcha](proyecto/README_instalacion.md)**
+
+Resumen rápido para quien ya tiene el entorno listo:
+
+1. `git clone git@github.com:7mo-ArquitecturaComputadoras/Practica05_ProductoPunto.git
+2. Abrir `proyecto/Practica05_ProductoPunto.slnx` en Visual Studio.
+3. Seleccionar configuración **Debug | Win32**.
+4. Compilar con `Ctrl + Shift + B` y ejecutar con `Ctrl + F5`.
+5. Ingresar la dimensión `N` y los valores de ambos vectores cuando lo solicite.
+
+---
+
+## 🔍 Trazado del ejemplo `u=(2,3,4)` y `v=(1,5,2)`
+
 ### Estado de la pila FPU por instrucción
 
 | Instrucción          | ST(0)               | ST(1) |
@@ -84,7 +125,7 @@ fin:
 | `FMUL [EDI]`         | `vec1[i] * vec2[i]` | acum  |
 | `FADDP ST(1),ST(0)`  | `acum + producto`   | —     |
 
-### Ejemplo con u=(2, 3, 4) y v=(1, 5, 2)
+### Iteración completa para `u=(2,3,4)` y `v=(1,5,2)`
 
 | Iteración | vec1[i] | vec2[i] | Producto | Acumulador |
 |-----------|---------|---------|----------|------------|
@@ -93,13 +134,13 @@ fin:
 | 2         | 3.0     | 5.0     | 15       | 17         |
 | 3         | 4.0     | 2.0     | 8        | **25**     |
 
-Resultado final: **25**
+Resultado final: **25** (almacenado en `ST(0)` al retornar)
 
 ---
 
-## Instrucciones x86 Utilizadas
+## 📘 Instrucciones x86 utilizadas
 
-### FPU
+### FPU (Floating Point Unit)
 
 | Instrucción  | Operación                                                             |
 |--------------|-----------------------------------------------------------------------|
@@ -123,31 +164,15 @@ Resultado final: **25**
 
 ---
 
-## Ejemplo de Ejecución
+## 📄 Documentación adicional
 
-```
-Ingresa la dimension de los vectores (N): 3
-
---- DATOS DEL VECTOR 1 ---
-Ingresa el valor para vec1[0]: 2
-Ingresa el valor para vec1[1]: 3
-Ingresa el valor para vec1[2]: 4
-
---- DATOS DEL VECTOR 2 ---
-Ingresa el valor para vec2[0]: 1
-Ingresa el valor para vec2[1]: 5
-Ingresa el valor para vec2[2]: 2
-
-----------------------------------------
-Resultado del Producto Punto: 25
-```
+| Documento | Descripción |
+|---|---|
+| 🛠️ [`README_instalacion.md`](proyecto/README_instalacion.md) | Cómo instalar Git, Visual Studio con MASM, compilar y ejecutar el programa paso a paso. |
+| 📄 [`README_compilacion_latex.md`](documentacion/README_compilacion_latex.md) | Cómo regenerar el PDF del reporte a partir de `reporte.tex` usando TeX Live, Geany o VS Code, tanto en Linux como en Windows. |
+| 📕 [`reporte.pdf`](documentacion/reporte.pdf) | Reporte técnico ya compilado, con análisis detallado del algoritmo y la pila FPU. |
+| 📝 [`reporte.tex`](documentacion/reporte.tex) | Fuente LaTeX del reporte técnico. |
 
 ---
 
-## Requisitos
-
-- **Ensamblador:** MASM (Microsoft Macro Assembler), incluido en Visual Studio
-- **Compilador C++:** MSVC (Visual Studio 2019 o superior)
-- **Arquitectura:** x86 (32 bits), modo protegido plano (`flat`)
-- **Sistema operativo:** Windows
-- **Convención de llamadas:** `cdecl` / convención C (`flat, c`)
+> **Autor:** Edson Joel Carrera Avila
