@@ -173,7 +173,7 @@ Para depuración avanzada (inspeccionar la pila FPU):
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
-| `error A2006: undefined symbol : ExitProcess` | Configuración en **x64** con código de 32 bits | Cambia la plataforma a **Win32** en la barra superior |
+| `error LNK2019: unresolved external symbol _productoPunto` | El símbolo no se exporta con la convención `c` | Verifica que `productoPunto.asm` use `.model flat, c` y declare `productoPunto PROC` |
 | `error MSB6006: "ml.exe" exited with code 1` | Ruta del archivo `.asm` rota | Verifica que `proyecto/src/productoPunto.asm` exista |
 | **masm(.targets, .props)** no aparece en *Personalizaciones de compilación* | Falta la carga de trabajo *Desarrollo C++* | Abre **Visual Studio Installer**, pulsa **"Modificar"** y agrégala |
 | `git` no se reconoce como comando | Git no se instaló o no se agregó al PATH | Reinstala Git marcando *"Git from the command line and also from 3rd-party software"* |
