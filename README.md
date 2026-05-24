@@ -81,7 +81,7 @@ Practica05_ProductoPunto/
 │   ├── README_compilacion_latex.md         # Cómo compilar el .tex a PDF
 │   ├── reporte.pdf                         # Reporte técnico compilado
 │   ├── reporte.tex                         # Reporte técnico en LaTeX
-│   └── imagenes/
+│   └── imagenes/                           # Imágenes usadas en el reporte
 │
 ├── proyecto/
 │   ├── README_instalacion.md               # Guía de instalación y puesta en marcha
