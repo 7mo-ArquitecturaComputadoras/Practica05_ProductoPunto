@@ -83,8 +83,6 @@ Abre el **Símbolo del sistema** (`cmd`) o **Git Bash**, ubícate en la carpeta 
 git clone git@github.com:7mo-ArquitecturaComputadoras/Practica05_ProductoPunto.git
 ```
 
-> 💡 Reemplaza `<url-del-repositorio>` por el enlace HTTPS o SSH del repositorio en GitHub/GitLab.
-
 ---
 
 ## 4️⃣ Abrir la solución en Visual Studio
