@@ -106,7 +106,11 @@ La guía detallada con todos los pasos (instalar Git, Visual Studio, habilitar M
 
 Resumen rápido para quien ya tiene el entorno listo:
 
-1. `git clone git@github.com:7mo-ArquitecturaComputadoras/Practica05_ProductoPunto.git
+1. Abre el **Símbolo del sistema** (`cmd`) o **Git Bash**, ubícate en la carpeta donde quieras guardar el proyecto y ejecuta:
+
+```bash
+git clone git@github.com:7mo-ArquitecturaComputadoras/Practica05_ProductoPunto.git
+```
 2. Abrir `proyecto/Practica05_ProductoPunto.slnx` en Visual Studio.
 3. Seleccionar configuración **Debug | Win32**.
 4. Compilar con `Ctrl + Shift + B` y ejecutar con `Ctrl + F5`.
